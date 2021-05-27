@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ratings-api-files
+  name: ratings-api
 spec:
   selector:
     matchLabels:
@@ -9,30 +9,25 @@ spec:
   template:
     metadata:
       labels:
-        app: ratings-api-files # the label for the pods and the deployments
+        app: ratings-api # the label for the pods and the deployments
+        aadpodidbinding: "csi-to-key-vault"
     spec:
       containers:
       - name: ratings-api
         image: <acr name>.azurecr.io/ratings-api:v1 # IMPORTANT: update with your own repository
         imagePullPolicy: Always
         volumeMounts:
-        - name: secretvolume
-          mountPath: "/etc/secrets"
+        - name: keyvault
+          mountPath: "/mnt/secrets-store"
           readOnly: true
         ports:
         - containerPort: 3000 # the application listens to this port
-        env:
-        - name: MONGODB_URI # the application expects to find the MongoDB connection details in this environment variable
-          valueFrom:
-            secretKeyRef:
-              name: mongosecret # the name of the Kubernetes secret containing the data
-              key: MONGOCONNECTION # the key inside the Kubernetes secret containing the data
         resources:
           requests: # minimum resources required
-            cpu: 1000m
+            cpu: 250m
             memory: 64Mi
           limits: # maximum resources allocated
-            cpu: 1000m
+            cpu: 500m
             memory: 256Mi
         readinessProbe: # is the container ready to receive traffic?
           httpGet:
@@ -43,6 +38,10 @@ spec:
             port: 3000
             path: /healthz
       volumes:
-      - name: secretvolume
-        secret:
-          secretName: mongosecret
+      - name: keyvault
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "key-vault-secret-file"
+
