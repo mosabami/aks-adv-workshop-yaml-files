@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongosecret
+  namespace: ratingsapp
+type: Opaque
+data:
+  MONGOCONNECTION: <your encrypted connection string>
