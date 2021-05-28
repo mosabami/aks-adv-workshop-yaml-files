@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ratings-api-kv-env
+  name: ratings-api
 spec:
   selector:
     matchLabels:
-      app: ratings-api-kv-env
+      app: ratings-api
   template:
     metadata:
       labels:
-        app: ratings-api-kv-env # the label for the pods and the deployments
+        app: ratings-api # the label for the pods and the deployments
         aadpodidbinding: "csi-to-key-vault"
     spec:
       containers:
-      - name: ratings-api-kv-env
+      - name: ratings-api
         image: <acr name>.azurecr.io/ratings-api:v1 # IMPORTANT: update with your own repository
         imagePullPolicy: Always
         env:

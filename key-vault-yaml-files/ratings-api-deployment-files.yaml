@@ -5,14 +5,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: ratings-api
+      app: ratings-api-files
   template:
     metadata:
       labels:
         app: ratings-api-files # the label for the pods and the deployments
     spec:
       containers:
-      - name: ratings-api
+      - name: ratings-api-files
         image: <acr name>.azurecr.io/ratings-api:v1 # IMPORTANT: update with your own repository
         imagePullPolicy: Always
         volumeMounts:
